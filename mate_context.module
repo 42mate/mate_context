@@ -1,0 +1,78 @@
+<?php
+/**
+ * @file
+ * Main file for the Mate Context  module, which extends context.
+ */
+
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function rrk_context_ctools_plugin_api($module, $api) {
+  if ($module == 'context' && $api == 'plugins') {
+    return array('version' => 3);    
+  }
+}
+
+/**
+ * Implements hook_context_plugins().
+ */
+function mate_context_context_plugins() {
+  return array(
+    'mate_context_reaction_add_js' => array(
+      'handler' => array(
+        'path' => drupal_get_path('module', 'mate_context') . '/plugins',
+        'file' => 'mate_context_reaction_add_js.inc',
+        'class' => 'mate_context_reaction_add_js',
+        'parent' => 'context_reaction',
+      ),
+    ),
+    'mate_context_reaction_add_html' => array(
+      'handler' => array(
+        'path' => drupal_get_path('module', 'mate_context') . '/plugins',
+        'file' => 'mate_context_reaction_add_html.inc',
+        'class' => 'mate_context_reaction_add_html',
+        'parent' => 'context_reaction',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_context_registry().
+ */
+function mate_context_context_registry() {
+  return array(
+    'reactions' => array(
+      'mate_context_reaction' => array(
+        'title' => t('Javascript code'),
+        'description' => t('Add Javascript scripts on contextual pages.'),
+        'plugin' => 'mate_context_reaction_add_js',
+      ),
+      'mate_context_add_html_reaction' => array(
+        'title' => t('HTML snippet'),
+        'description' => t('Add HTML snippet on contextual pages.'),
+        'plugin' => 'mate_context_reaction_add_html',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_context_page_reaction().
+ */
+function mate_context_context_page_reaction() {
+  
+  if ($plugin = context_get_plugin('reaction', 'mate_context_reaction')) {
+    $plugin->execute();
+  }
+}
+
+/**
+ * Implements hook_page_alter().
+ */
+function mate_context_page_alter(&$page) {
+
+  if ($plugin = context_get_plugin('reaction', 'mate_context_add_html_reaction')) {
+    $plugin->execute($page);
+  }
+}

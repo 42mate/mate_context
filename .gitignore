@@ -34,3 +34,8 @@ xmlrpc.php
 /profiles
 /scripts
 /themes
+
+# Ignore IDEs metadata folders/files
+.idea/*
+nbproject/*
+
